@@ -50,4 +50,25 @@ describe("CreateStatementUseCase", () => {
     expect(deposit).toHaveProperty("id");
     expect(deposit.amount).toBeGreaterThan(0);
   });
+
+  it("Should be able to create one withdraw if sufficient funds", async () => {
+    const { sut, user_id } = await makeSut();
+
+    await sut.execute({
+      user_id,
+      type: OperationType.DEPOSIT,
+      amount: faker.datatype.number({ min: 100 }),
+      description: faker.lorem.words(),
+    });
+
+    const withdraw = await sut.execute({
+      user_id,
+      type: OperationType.WITHDRAW,
+      amount: faker.datatype.number({ max: 20 }),
+      description: faker.lorem.words(),
+    });
+
+    expect(withdraw).toBeTruthy();
+    expect(withdraw).toHaveProperty("id");
+  });
 });
